@@ -4,7 +4,7 @@ import constants from "../../utils/const.ts";
 import * as auth from "../../middlewares/auth.ts";
 
 const router = new Router({
-  prefix: "/v1/external",
+  prefix: "/v2/external",
 });
 
 const tor = Deno.createHttpClient({

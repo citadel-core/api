@@ -9,7 +9,7 @@ import * as authLogic from "../../logic/auth.ts";
 import { getPasswordFromContext } from "../../utils/auth.ts";
 
 const router = new Router({
-  prefix: "/v1/account",
+  prefix: "/v2/account",
 });
 
 // Endpoint to change your password.

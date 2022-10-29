@@ -44,7 +44,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 yarn start
 ```
 
-You can browse through the available API endpoints [here](https://github.com/runcitadel/manager/tree/main/routes/v1) or use [our TypeScript SDK](https://github.com/runcitadel/sdk).
+You can browse through the available API endpoints [here](https://github.com/runcitadel/manager/tree/main/routes/v2) or use [our TypeScript SDK](https://github.com/runcitadel/sdk).
 
 ---
 

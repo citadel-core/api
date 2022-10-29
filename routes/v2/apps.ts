@@ -6,7 +6,7 @@ import * as auth from "../../middlewares/auth.ts";
 import { runCommand } from "../../services/karen.ts";
 
 const router = new Router({
-  prefix: "/v1/apps",
+  prefix: "/v2/apps",
 });
 
 router.get("/", auth.jwt, async (ctx, next) => {

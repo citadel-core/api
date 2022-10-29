@@ -8,6 +8,5 @@ Deno.test("It correctly responds to a ping", async () => {
   const app = await routerToSuperDeno(ping);
   const response = await app.get("/ping");
   assert(response.ok);
-  assert(response.body.isCitadel);
-  assert(Array.isArray(response.body.features));
+  assert(typeof response.body.version == "string");
 });

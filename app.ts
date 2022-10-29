@@ -6,10 +6,10 @@ import { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
 import logger from "https://deno.land/x/oak_logger@1.0.0/mod.ts";
 
 import ping from "./routes/ping.ts";
-import account from "./routes/v1/account.ts";
+import account from "./routes/v2/account.ts";
 import system from "./routes/v2/system.ts";
-import external from "./routes/v1/external.ts";
-import apps from "./routes/v1/apps.ts";
+import external from "./routes/v2/external.ts";
+import apps from "./routes/v2/apps.ts";
 
 config();
 
@@ -34,15 +34,13 @@ app.use(async ({ response }, next) => {
 app.use(ping.routes());
 app.use(ping.allowedMethods());
 
-// V1 API
+// V2 API
 app.use(account.routes());
 app.use(account.allowedMethods());
 app.use(external.routes());
 app.use(external.allowedMethods());
 app.use(apps.routes());
 app.use(apps.allowedMethods());
-
-// V2 API for Citadel SDK
 app.use(system.routes());
 app.use(system.allowedMethods());
 
