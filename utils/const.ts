@@ -27,23 +27,26 @@ export default {
   get SEED_FILE() {
     return Deno.env.get("SEED_FILE") || "/db/citadel-seed/seed";
   },
+  get ELECTRUM_HOST() {
+    return Deno.env.get("ELECTRUM_HOST");
+  },
   get ELECTRUM_PORT() {
-    return Number.parseInt(Deno.env.get("ELECTRUM_PORT") || "50001", 10) ||
-      50_001;
+    return Deno.env.get("ELECTRUM_PORT") ? Number.parseInt(Deno.env.get("ELECTRUM_PORT") as string, 10) : undefined;
   },
   get BITCOIN_P2P_PORT() {
-    return Number.parseInt(Deno.env.get("BITCOIN_P2P_PORT") || "8333", 10) ||
-      8333;
+    return Deno.env.get("BITCOIN_P2P_PORT") ? Number.parseInt(Deno.env.get("BITCOIN_P2P_PORT") as string, 10) : undefined;
   },
   get BITCOIN_RPC_PORT() {
-    return Number.parseInt(Deno.env.get("BITCOIN_RPC_PORT") || "8332", 10) ||
-      8332;
+    return Deno.env.get("BITCOIN_RPC_PORT") ? Number.parseInt(Deno.env.get("BITCOIN_RPC_PORT") as string, 10) : undefined;
   },
   get BITCOIN_RPC_USER() {
-    return Deno.env.get("BITCOIN_RPC_USER") || "citadel";
+    return Deno.env.get("BITCOIN_RPC_USER");
   },
   get BITCOIN_RPC_PASSWORD() {
-    return Deno.env.get("BITCOIN_RPC_PASSWORD") || "moneyprintergobrrr";
+    return Deno.env.get("BITCOIN_RPC_PASSWORD");
+  },
+  get BITCOIN_HOST() {
+    return Deno.env.get("BITCOIN_HOST");
   },
   get LND_CERT_FILE() {
     return Deno.env.get("LND_CERT_FILE") || "/lnd/tls.cert";
@@ -71,4 +74,10 @@ export default {
   get IS_CITADEL_OS() {
     return Deno.env.get("IS_CITADEL_OS") === "true";
   },
+  get I2P_USERNAME() {
+    return Deno.env.get("I2P_USERNAME");
+  },
+  get I2P_PASSWORD() {
+    return Deno.env.get("I2P_PASSWORD");
+  }
 };

@@ -22,21 +22,6 @@ router.get("/dashboard-hidden-service", auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get("/electrum-connection-details", auth.jwt, async (ctx, next) => {
-  ctx.response.body = await systemLogic.getElectrumConnectionDetails();
-  await next();
-});
-
-router.get("/bitcoin-p2p-connection-details", auth.jwt, async (ctx, next) => {
-  ctx.response.body = await systemLogic.getBitcoinP2pConnectionDetails();
-  await next();
-});
-
-router.get("/bitcoin-rpc-connection-details", auth.jwt, async (ctx, next) => {
-  ctx.response.body = await systemLogic.getBitcoinRpcConnectionDetails();
-  await next();
-});
-
 router.get("/lndconnect-urls", auth.jwt, async (ctx, next) => {
   ctx.response.body = await systemLogic.getLndConnectUrls();
   await next();
@@ -149,6 +134,14 @@ router.put("/update-channel", auth.jwt, async (ctx, next) => {
 router.get("/update-channel", auth.jwt, async (ctx, next) => {
   ctx.response.body = {
     channel: constants.GITHUB_BRANCH,
+  };
+  await next();
+});
+
+router.get("/i2p-credentials", auth.jwt, async (ctx, next) => {
+  ctx.response.body = {
+    username: constants.I2P_USERNAME,
+    password: constants.I2P_PASSWORD,
   };
   await next();
 });
