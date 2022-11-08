@@ -7,9 +7,11 @@ import logger from "https://deno.land/x/oak_logger@1.0.0/mod.ts";
 
 import ping from "./routes/ping.ts";
 import account from "./routes/v2/account.ts";
-import system from "./routes/v2/system.ts";
-import external from "./routes/v2/external.ts";
 import apps from "./routes/v2/apps.ts";
+import bitcoin from "./routes/v2/bitcoin.ts";
+import electrum from "./routes/v2/electrum.ts";
+import external from "./routes/v2/external.ts";
+import system from "./routes/v2/system.ts";
 
 config();
 
@@ -35,12 +37,16 @@ app.use(ping.routes());
 app.use(ping.allowedMethods());
 
 // V2 API
-app.use(account.routes());
-app.use(account.allowedMethods());
-app.use(external.routes());
-app.use(external.allowedMethods());
 app.use(apps.routes());
 app.use(apps.allowedMethods());
+app.use(account.routes());
+app.use(account.allowedMethods());
+app.use(bitcoin.routes());
+app.use(bitcoin.allowedMethods());
+app.use(electrum.routes());
+app.use(electrum.allowedMethods());
+app.use(external.routes());
+app.use(external.allowedMethods());
 app.use(system.routes());
 app.use(system.allowedMethods());
 

@@ -5,13 +5,22 @@ import BitcoinRPC from "https://deno.land/x/bitcoin_rpc@v1.0.2/mod.ts";
 
 import * as auth from "../../middlewares/auth.ts";
 import constants from "../../utils/const.ts";
-import { FetchedRawTransaction, MempoolInfo, Block, getInfoResponse } from "../../types/bitcoin.d.ts";
+import {
+  Block,
+  FetchedRawTransaction,
+  getInfoResponse,
+  MempoolInfo,
+} from "../../types/bitcoin.d.ts";
 
 const router = new Router({
-  prefix: '/v2/bitcoin',
+  prefix: "/v2/bitcoin",
 });
 
-async function getBlocks(bitcoinClient: BitcoinRPC, fromHeight: number, toHeight: number): Promise<Block[]> {
+async function getBlocks(
+  bitcoinClient: BitcoinRPC,
+  fromHeight: number,
+  toHeight: number,
+): Promise<Block[]> {
   const startingBlockHashRaw = await bitcoinClient.getblockhash(
     toHeight,
   );
@@ -50,7 +59,10 @@ async function getBlocks(bitcoinClient: BitcoinRPC, fromHeight: number, toHeight
   return blocks;
 }
 
-if (constants.BITCOIN_HOST && constants.BITCOIN_RPC_PORT && constants.BITCOIN_RPC_USER && constants.BITCOIN_RPC_PASSWORD) {
+if (
+  constants.BITCOIN_HOST && constants.BITCOIN_RPC_PORT &&
+  constants.BITCOIN_RPC_USER && constants.BITCOIN_RPC_PASSWORD
+) {
   const bitcoinClient = new BitcoinRPC({
     host: constants.BITCOIN_HOST,
     port: constants.BITCOIN_RPC_PORT,
@@ -58,40 +70,52 @@ if (constants.BITCOIN_HOST && constants.BITCOIN_RPC_PORT && constants.BITCOIN_RP
     password: constants.BITCOIN_RPC_PASSWORD,
   });
 
-  router.get('/mempool', auth.jwt, async (ctx, next) => {
+  router.get("/mempool", auth.jwt, async (ctx, next) => {
     ctx.response.body = await bitcoinClient.getmempoolinfo() as MempoolInfo;
     await next();
   });
 
-  router.get('/blockcount', auth.jwt, async (ctx, next) => {
-    ctx.response.body = await bitcoinClient.getblockcount() as number
+  router.get("/blockcount", auth.jwt, async (ctx, next) => {
+    ctx.response.body = await bitcoinClient.getblockcount() as number;
     await next();
   });
 
-  router.get('/connections', auth.jwt, async (ctx, next) => {
-    ctx.response.body = await bitcoinClient.request("getconnectioncount", []) as number;
+  router.get("/connections", auth.jwt, async (ctx, next) => {
+    ctx.response.body = await bitcoinClient.request(
+      "getconnectioncount",
+      [],
+    ) as number;
     await next();
   });
 
-  router.get('/chain', auth.jwt, async (ctx, next) => {
-    ctx.response.body = await bitcoinClient.getblockchaininfo() as getInfoResponse;
+  router.get("/chain", auth.jwt, async (ctx, next) => {
+    ctx.response.body = await bitcoinClient
+      .getblockchaininfo() as getInfoResponse;
     await next();
   });
 
-  router.get('/version', auth.jwt, async (ctx, next) => {
-    ctx.response.body = JSON.stringify((await bitcoinClient.getnetworkinfo()).subversion as string);
+  router.get("/version", auth.jwt, async (ctx, next) => {
+    ctx.response.body = JSON.stringify(
+      (await bitcoinClient.getnetworkinfo()).subversion as string,
+    );
     await next();
   });
 
-  router.get('/blocks', auth.jwt, async (ctx, next) => {
-    const fromHeight = Number.parseInt(ctx.request.url.searchParams.get("from") as string);
-    const toHeight = Number.parseInt(ctx.request.url.searchParams.get("to") as string);
+  router.get("/blocks", auth.jwt, async (ctx, next) => {
+    const fromHeight = Number.parseInt(
+      ctx.request.url.searchParams.get("from") as string,
+    );
+    const toHeight = Number.parseInt(
+      ctx.request.url.searchParams.get("to") as string,
+    );
     ctx.response.body = await getBlocks(bitcoinClient, fromHeight, toHeight);
     await next();
   });
 
-  router.get('/tx/:id', auth.jwt, async (ctx, next) => {
-    ctx.response.body = await bitcoinClient.getrawtransaction(ctx.params.id) as FetchedRawTransaction;
+  router.get("/tx/:id", auth.jwt, async (ctx, next) => {
+    ctx.response.body = await bitcoinClient.getrawtransaction(
+      ctx.params.id,
+    ) as FetchedRawTransaction;
     await next();
   });
 
@@ -102,6 +126,35 @@ if (constants.BITCOIN_HOST && constants.BITCOIN_RPC_PORT && constants.BITCOIN_RP
 
   router.get("/connection-details/rpc", auth.jwt, async (ctx, next) => {
     ctx.response.body = await systemLogic.getBitcoinRpcConnectionDetails();
+    await next();
+  });
+
+  router.get("/stats", auth.jwt, async (ctx, next) => {
+    const blockchainInfo = await bitcoinClient.getblockchaininfo();
+    const networkInfo = await bitcoinClient.getnetworkinfo();
+    const mempoolInfo = await bitcoinClient.getmempoolinfo();
+    const miningInfo = await bitcoinClient.getmininginfo();
+
+    ctx.response.body = {
+      blockchainInfo,
+      networkInfo,
+      mempoolInfo,
+      miningInfo,
+    };
+    await next();
+  });
+
+  router.get("/max-header", auth.jwt, async (ctx, next) => {
+    const peerInfo = await bitcoinClient.getpeerinfo();
+
+    // deno-lint-ignore no-explicit-any
+    const maxPeer = peerInfo.reduce(function (previous: any, current: any) {
+      return previous.synced_headers > current.synced_headers
+        ? previous
+        : current;
+    });
+
+    ctx.response.body = maxPeer.synced_headers;
     await next();
   });
 } else {

@@ -28,3 +28,5 @@ if (constants.ELECTRUM_HOST && constants.ELECTRUM_PORT) {
 } else {
     console.warn("Electrum does not seem to be installed");
 }
+
+export default router;
