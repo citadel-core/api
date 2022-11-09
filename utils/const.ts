@@ -79,5 +79,5 @@ export default {
   },
   get I2P_PASSWORD() {
     return Deno.env.get("I2P_PASSWORD");
-  }
+  },
 };
