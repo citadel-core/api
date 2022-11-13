@@ -1,14 +1,16 @@
-# Citadel manager
+# Citadel API
 
 [![codecov](https://codecov.io/github/runcitadel/manager/branch/main/graph/badge.svg?token=9WJ88AUTB9)](https://codecov.io/github/runcitadel/manager)
 
-Manager provides a low-level system API that handles:
+This is the main backend of Citadel that handles:
+
 - User authentication using JWT
 - Encryption/decryption of sensitive information, such as the lightning wallet's seed
 - CRUD operations
 - Lifecycle-management of all other containerized services
+- Communication with Bitcoind and Electrs
 
-## 🛠 Running manager (for development purposes only)
+## 🛠 Running api (for development purposes only)
 
 ### Step 1. Install dependencies
 ```sh
@@ -20,7 +22,7 @@ Set the following environment variables directly or by placing them in `.env` fi
 
 | Variable | Description | Default |
 | ------------- | ------------- | ------------- |
-| `PORT` | Port where manager should listen for requests | `3006` |
+| `PORT` | Port where manager should listen for requests | `3000` |
 | `DEVICE_HOSTS` | Comma separated list of IPs or domain names to whitelist for CORS | `http://citadel.local` |
 | `USER_FILE` | Path to the user's data file (automatically created on user registration) | `/db/user.json` |
 | `MIDDLEWARE_API_URL` | IP or domain where [`middleware`](https://github.com/runcitadel/middleware) is listening | `http://localhost` |
@@ -29,7 +31,9 @@ Set the following environment variables directly or by placing them in `.env` fi
 | `JWT_PRIVATE_KEY_FILE` | Path to the JWT private key (automatically created) | `/db/jwt-public-key/jwt.key` |
 | `JWT_EXPIRATION` | JWT expiration in miliseconds | `3600` |
 | `SEED_FILE` | Path to the seed used to deterministically generate entropy | `'/db/citadel-seed/seed'` |
+| `ELECTRUM_PORT` | Host the Electrum server is listening on | - |
 | `ELECTRUM_PORT` | Port the Electrum server is listening on | `50001` |
+| `BITCOIN_HOSTT` | Host where `bitcoind` is listening | - |
 | `BITCOIN_P2P_PORT` | P2P port of `bitcoin` | `8333` |
 | `BITCOIN_RPC_PORT` | RPC port of `bitcoin` | `8332` |
 | `BITCOIN_RPC_USER` | RPC user for `bitcoin` | `citadel` |
@@ -44,25 +48,13 @@ Set the following environment variables directly or by placing them in `.env` fi
 yarn start
 ```
 
-You can browse through the available API endpoints [here](https://github.com/runcitadel/manager/tree/main/routes/v2) or use [our TypeScript SDK](https://github.com/runcitadel/sdk).
+You can browse through the available API endpoints [here](https://github.com/citadel-core/api/tree/main/routes/v2) or use [our TypeScript SDK](https://github.com/runcitadel/sdk-v2).
 
 ---
 
-### ⚡️ Don't be too reckless
-
-> Citadel is still in an early stage and things are expected to break every now and then. We **DO NOT** recommend running it on the mainnet with real money just yet, unless you want to be really *#reckless*.
-
-## ❤️ Contributing
-
-We welcome and appreciate new contributions!
-
-If you're a developer looking to help but not sure where to begin, check out [these issues](https://github.com/runcitadel/manager/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) that have specifically been marked as being friendly to new contributors.
-
-If you're looking for a bigger challenge, before opening a pull request please [create an issue](https://github.com/runcitadel/manager/issues/new/choose) or [join our Discord server](https://discord.com/invite/d6SaSTh3Dj) to get feedback, discuss the best way to tackle the challenge, and to ensure that there's no duplication of work.
-
 ## 🙏 Acknowledgements
 
-Manager is inspired by and built upon the work done by [Umbrel](https://github.com/getumbrel) on its open-source [Manager API](https://github.com/getumbrel/umbrel-manager).
+The Citadel API is inspired by and built upon the work done by [Umbrel](https://github.com/getumbrel) on its open-source [Manager API](https://github.com/getumbrel/umbrel-manager).
 
 The original code we forked is licensed under
 
