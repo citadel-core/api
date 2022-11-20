@@ -1,8 +1,7 @@
 import { runCommand } from "../services/karen.ts";
 import * as diskLogic from "./disk.ts";
-
-/** A dependency an app could have */
-export type Dependency = "bitcoind" | "electrum" | "lnd" | "c-lightning";
+import constants from "../utils/const.ts";
+import { join } from "https://deno.land/std@0.152.0/path/mod.ts";
 
 export type MetadataV4 = {
   /**
@@ -59,7 +58,7 @@ export type MetadataV4 = {
    */
   torOnly?: boolean;
   /**
-   * A list of containers to update automatically (still validated by the Citadel team)
+   * A list of containers to update automatically
    */
   updateContainers?: string[] | null;
   /**
@@ -73,11 +72,17 @@ export type MetadataV4 = {
   installed?: boolean;
   /** Automatically added */
   compatible: boolean;
+  releaseNotes: string;
 };
 
 export type AppQuery = {
   installed?: boolean;
   compatible?: boolean;
+};
+
+export type AppSrc = {
+  repo: string,
+  branch: string,
 };
 
 export async function get(
@@ -158,8 +163,23 @@ export async function update(id: string): Promise<void> {
   }
 }
 
-export function getAvailableUpdates(): Promise<string[]> {
-  return diskLogic.readJsonStatusFile<string[]>("app-updates");
+export function getAvailableUpdates(): Promise<{
+  id: string,
+  new_version: string,
+  release_notes: Record<string, string>,
+}[]> {
+  return diskLogic.readYAMLFile(join(constants.APPS_DIR, "updates.yml"));
+}
+
+export function getAppSources(): Promise<AppSrc[]> {
+  return diskLogic.readYAMLFile(join(constants.APPS_DIR, "sources.yml"));
+}
+
+export async function addAppSrc(src: AppSrc): Promise<void> {
+  const sources = await diskLogic.readYAMLFile(join(constants.APPS_DIR, "sources.yml")) as AppSrc[];
+  sources.push(src);
+  await diskLogic.writeYAMLFile(join(constants.APPS_DIR, "sources.yml"), sources);
+  await runCommand(`trigger app download-new`);
 }
 
 export async function getImplementation(service: string): Promise<string | undefined> {

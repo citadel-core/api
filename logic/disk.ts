@@ -12,6 +12,7 @@ import {
   existsSync,
 } from "https://deno.land/std@0.159.0/fs/mod.ts";
 import { join } from "https://deno.land/std@0.159.0/path/mod.ts";
+import * as YAML from "https://deno.land/std@0.159.0/encoding/yaml.ts";
 
 export type UserFile = {
   /** The user's name */
@@ -43,13 +44,22 @@ export function getRandomString(s: number) {
   return ret;
 }
 
-async function readJsonFile<T = unknown>(path: string): Promise<T> {
+export async function readJsonFile<T = unknown>(path: string): Promise<T> {
   const contents = await Deno.readTextFile(path);
   return JSON.parse(contents) as T;
 }
 
-function writeJsonFile(path: string, data: unknown): Promise<void> {
+export function writeJsonFile(path: string, data: unknown): Promise<void> {
   return Deno.writeTextFile(path, JSON.stringify(data));
+}
+
+export async function readYAMLFile<T = unknown>(path: string): Promise<T> {
+  const contents = await Deno.readTextFile(path);
+  return YAML.parse(contents) as T;
+}
+
+export function writeYAMLFile(path: string, data: unknown): Promise<void> {
+  return Deno.writeTextFile(path, YAML.stringify(data as Record<string, unknown>));
 }
 
 async function safeWriteTextFile(

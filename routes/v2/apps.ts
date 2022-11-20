@@ -57,4 +57,29 @@ router.post("/update", auth.jwt, async (ctx, next) => {
   await next();
 });
 
+router.get("/sources", auth.jwt, async (ctx, next) => {
+  ctx.response.body = await appsLogic.getAppSources();
+  ctx.response.status = Status.OK;
+  await next();
+});
+
+router.post("/sources", auth.jwt, async (ctx, next) => {
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
+  if (
+    typeof body.repo !== "string" ||
+    typeof body.branch !== "string"
+  ) {
+    ctx.throw(Status.BadRequest, "Received invalid data.");
+    return;
+  }
+  await appsLogic.addAppSrc({
+    repo: body.repo,
+    branch: body.branch,
+  });
+  ctx.response.status = Status.OK;
+  await next();
+});
+
 export default router;

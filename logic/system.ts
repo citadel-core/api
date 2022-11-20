@@ -68,7 +68,7 @@ export async function getElectrumConnectionDetails(): Promise<
     }
     const addressUnformatted = await diskLogic.readHiddenService(`app-${electrum}-service`);
     const address = addressUnformatted.trim();
-    const port = constants.ELECTRUM_PORT;
+    const port = constants.ELECTRUM_PORT!;
     const connectionString = `${address}:${port}:t`;
     return {
       address,
@@ -85,7 +85,7 @@ export async function getBitcoinP2pConnectionDetails(): Promise<
 > {
   try {
     const address = await diskLogic.readBitcoinP2pHiddenService();
-    const port = constants.BITCOIN_P2P_PORT;
+    const port = constants.BITCOIN_P2P_PORT!;
     const connectionString = `${address}:${port}`;
     return {
       address,
@@ -106,10 +106,10 @@ export async function getBitcoinRpcConnectionDetails(): Promise<
       diskLogic.readBitcoinRpcHiddenService(),
     ]);
     const label = encodeURIComponent(`${user.name}'s Citadel`);
-    const rpcuser = constants.BITCOIN_RPC_USER;
-    const rpcpassword = constants.BITCOIN_RPC_PASSWORD;
+    const rpcuser = constants.BITCOIN_RPC_USER!;
+    const rpcpassword = constants.BITCOIN_RPC_PASSWORD!;
     const address = hiddenService;
-    const port = constants.BITCOIN_RPC_PORT;
+    const port = constants.BITCOIN_RPC_PORT!;
     const connectionString =
       `btcrpc://${rpcuser}:${rpcpassword}@${address}:${port}?label=${label}`;
     return {
