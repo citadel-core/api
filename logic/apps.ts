@@ -64,7 +64,7 @@ export type MetadataV4 = {
   /**
    * The version of the app
    */
-  version:         string;
+  version: string;
   versionControl?: null | string;
   /** Automatically added */
   hiddenService?: string;
@@ -81,8 +81,22 @@ export type AppQuery = {
 };
 
 export type AppSrc = {
-  repo: string,
-  branch: string,
+  repo: string;
+  branch: string;
+};
+
+export type AppRepo = {
+  id: string;
+  name: string;
+  tagline: string;
+  icon: string;
+  developers: string;
+  license: string;
+  apps: Record<string, string>;
+  commit: string;
+  repo: string;
+  branch: string;
+  subdir: string;
 };
 
 export async function get(
@@ -99,7 +113,9 @@ export async function get(
       }
 
       app.permissions = app.permissions || [];
-      if (app.implements && await getImplementation(app.implements) !== app.id) {
+      if (
+        app.implements && await getImplementation(app.implements) !== app.id
+      ) {
         app.compatible = false;
       }
     }),
@@ -164,26 +180,35 @@ export async function update(id: string): Promise<void> {
 }
 
 export function getAvailableUpdates(): Promise<{
-  id: string,
-  new_version: string,
-  release_notes: Record<string, string>,
+  id: string;
+  new_version: string;
+  release_notes: Record<string, string>;
 }[]> {
   return diskLogic.readYAMLFile(join(constants.APPS_DIR, "updates.yml"));
 }
 
-export function getAppSources(): Promise<AppSrc[]> {
-  return diskLogic.readYAMLFile(join(constants.APPS_DIR, "sources.yml"));
+export function getAppRepos(): Promise<AppRepo[]> {
+  return diskLogic.readYAMLFile(join(constants.APPS_DIR, "stores.yml"));
 }
 
 export async function addAppSrc(src: AppSrc): Promise<void> {
-  const sources = await diskLogic.readYAMLFile(join(constants.APPS_DIR, "sources.yml")) as AppSrc[];
+  const sources = await diskLogic.readYAMLFile(
+    join(constants.APPS_DIR, "sources.yml"),
+  ) as AppSrc[];
   sources.push(src);
-  await diskLogic.writeYAMLFile(join(constants.APPS_DIR, "sources.yml"), sources);
+  await diskLogic.writeYAMLFile(
+    join(constants.APPS_DIR, "sources.yml"),
+    sources,
+  );
   await runCommand(`trigger app download-new`);
 }
 
-export async function getImplementation(service: string): Promise<string | undefined> {
+export async function getImplementation(
+  service: string,
+): Promise<string | undefined> {
   const installedApps = (await diskLogic.readUserFile()).installedApps || [];
   const implementations = (await diskLogic.readVirtualApps())[service] || [];
-  return implementations.find((implementation) => installedApps.includes(implementation));
+  return implementations.find((implementation) =>
+    installedApps.includes(implementation)
+  );
 }

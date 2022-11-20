@@ -57,8 +57,8 @@ router.post("/update", auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.get("/sources", auth.jwt, async (ctx, next) => {
-  ctx.response.body = await appsLogic.getAppSources();
+router.get("/stores", auth.jwt, async (ctx, next) => {
+  ctx.response.body = await appsLogic.getAppRepos();
   ctx.response.status = Status.OK;
   await next();
 });
