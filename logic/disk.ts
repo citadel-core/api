@@ -1,4 +1,5 @@
 import type {
+  appUpdateStatus,
   backupStatus,
   debugStatus,
   updateStatus,
@@ -59,7 +60,10 @@ export async function readYAMLFile<T = unknown>(path: string): Promise<T> {
 }
 
 export function writeYAMLFile(path: string, data: unknown): Promise<void> {
-  return Deno.writeTextFile(path, YAML.stringify(data as Record<string, unknown>));
+  return Deno.writeTextFile(
+    path,
+    YAML.stringify(data as Record<string, unknown>),
+  );
 }
 
 async function safeWriteTextFile(
@@ -166,12 +170,16 @@ export function readLndAdminMacaroon(): Promise<Uint8Array> {
   return Deno.readFile(constants.LND_ADMIN_MACAROON_FILE);
 }
 
-export function readVersionFile(): Promise<versionFile> {
-  return readJsonFile(constants.VERSION_FILE);
+export function readVersionFile() {
+  return readJsonFile<versionFile>(constants.VERSION_FILE);
 }
 
-export function readUpdateStatusFile(): Promise<updateStatus> {
+export function readUpdateStatusFile() {
   return readJsonStatusFile<updateStatus>("update");
+}
+
+export function readAppUpdateStatusFile() {
+  return readJsonStatusFile<appUpdateStatus>("app-update");
 }
 
 export async function writeUpdateStatusFile(json: updateStatus): Promise<void> {

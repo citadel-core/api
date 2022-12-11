@@ -34,7 +34,10 @@ router.post(
       typeHelper.isString(newPassword, ctx);
       typeHelper.isMinPasswordLength(newPassword, ctx);
     } catch {
-      ctx.throw(Status.BadRequest, "New password does not meet the security requirements.");
+      ctx.throw(
+        Status.BadRequest,
+        "New password does not meet the security requirements.",
+      );
       return;
     }
     if (newPassword === currentPassword) {
@@ -52,7 +55,9 @@ router.post(
     } catch (error: unknown) {
       ctx.throw(
         Status.InternalServerError,
-        typeof error === "string" ? error : ((error as { message?: string }).message || JSON.stringify(error)),
+        typeof error === "string"
+          ? error
+          : ((error as { message?: string }).message || JSON.stringify(error)),
       );
     }
 

@@ -20,7 +20,7 @@ export function genKeys(): {
   return {
     privateKey,
     publicKey,
-  }
+  };
 }
 
 export async function generateJwtKeys(): Promise<void> {
@@ -81,7 +81,9 @@ export const basic: Middleware = async (
   // Check 2FA token when enabled
   if (await diskLogic.isTotpEnabled()) {
     isString(body?.totpToken, ctx);
-    const totp = new TOTP((await diskLogic.readUserFile()).totpSecret as string);
+    const totp = new TOTP(
+      (await diskLogic.readUserFile()).totpSecret as string,
+    );
     const isValid = totp.verify(body?.totpToken as string);
 
     if (!isValid) {

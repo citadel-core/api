@@ -64,7 +64,8 @@ export async function cleanup() {
   const standardUserFile = {
     name: "Tester with password password123",
     password: "$2a$10$XOWhRrdr.s6UZi.U5uwS5eY04P9HD4qjHcj8Ofck5sxx5tiICP5y6",
-    seed: "v4i4eoHmr5Wa1V6RLiXfw0qMzoJZUYj/Wf24HIw0p2Q=$6ab24c0706b26e3ff566d116b2c1b065$0/xFZcU29uMo$b7be1e091cea58521d75004a79862204c84e35150822d9c1972f22c6f74a4f5b$250000$cbc",
+    seed:
+      "v4i4eoHmr5Wa1V6RLiXfw0qMzoJZUYj/Wf24HIw0p2Q=$6ab24c0706b26e3ff566d116b2c1b065$0/xFZcU29uMo$b7be1e091cea58521d75004a79862204c84e35150822d9c1972f22c6f74a4f5b$250000$cbc",
     installedApps: ["example-app"],
   };
   await writeUserFile(standardUserFile);
@@ -186,7 +187,9 @@ export class FakeKaren {
   }
 }
 
-export async function getKarenMessages(generator: AsyncGenerator<string, string, void>): Promise<string[]> {
+export async function getKarenMessages(
+  generator: AsyncGenerator<string, string, void>,
+): Promise<string[]> {
   const result = [];
   for await (const msg of generator) {
     result.push(msg);
@@ -194,18 +197,18 @@ export async function getKarenMessages(generator: AsyncGenerator<string, string,
   return result;
 }
 
-
 export function runTest<PreTestResult = unknown, TestResult = unknown>(
   name: string,
   preTest: (() => PreTestResult) | null | undefined,
   test: (fromPreTest: Awaited<PreTestResult>) => TestResult,
   postTest: (args: {
-    result: Awaited<TestResult>,
-    karenMessages: string[],
+    result: Awaited<TestResult>;
+    karenMessages: string[];
   }) => unknown,
 ) {
   return Deno.test(name, async () => {
-    const preTestResult = await ((preTest ? preTest() : undefined) as PreTestResult);
+    const preTestResult =
+      await ((preTest ? preTest() : undefined) as PreTestResult);
     setEnv();
     const karen = new FakeKaren();
     const karenMessagesGenerator = await karen.start();
@@ -239,8 +242,8 @@ export function testRequest(
   },
   preTest: (() => unknown) | null | undefined,
   validateReply: (args: {
-    result: IResponse,
-    karenMessages: string[],
+    result: IResponse;
+    karenMessages: string[];
   }) => unknown,
 ) {
   return runTest(name, preTest, async () => {
@@ -256,13 +259,14 @@ export function testRequest(
     } else {
       throw new Error("Method not supported by the wrapper function");
     }
-    if (includeJwt)
+    if (includeJwt) {
       req.set("Authorization", `Bearer ${await generateJwt("admin")}`);
+    }
     if (body) {
       req.set("Content-Type", "application/json");
     }
     return await req.send(body ? JSON.stringify(body) : undefined);
-  }, validateReply)
+  }, validateReply);
 }
 
 export function testAndValidateRequest(
@@ -285,11 +289,21 @@ export function testAndValidateRequest(
     body?: unknown;
     includeJwt?: boolean;
     expectedKarenMessages?: string[];
-  }
+  },
 ) {
-  return testRequest(name, { router, method, url, body, includeJwt }, null, ({ result: response, karenMessages }) => {
-    assertEquals(response.status, expectedStatus);
-    if (expectedData) assertEquals(JSON.parse(response.text), expectedData);
-    if (expectedKarenMessages) assertEquals(karenMessages, expectedKarenMessages);
-  });
+  return testRequest(
+    name,
+    { router, method, url, body, includeJwt },
+    null,
+    ({ result: response, karenMessages }) => {
+      assertEquals(response.status, expectedStatus);
+      if (expectedData) assertEquals(JSON.parse(response.text), expectedData);
+      if (expectedKarenMessages) {
+        assertEquals(
+          karenMessages,
+          expectedKarenMessages,
+        );
+      }
+    },
+  );
 }

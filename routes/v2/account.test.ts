@@ -26,7 +26,7 @@ Deno.test("Login with valid password works", async () => {
   assert(response.ok, "Response should return status 200");
   assert(
     typeof response.body.jwt === "string",
-    "JWT should be present and a string"
+    "JWT should be present and a string",
   );
 });
 
@@ -101,24 +101,30 @@ testAndValidateRequest("Password change works with valid password", {
   expectedStatus: 200,
   expectedData: { percent: 100 },
   body: { password: "password1234", newPassword: "password12345" },
-  expectedKarenMessages: ["trigger change-password"]
+  expectedKarenMessages: ["trigger change-password"],
 });
 
-testAndValidateRequest("Password change progress always returns 100% for backwards compat", {
-  router: account,
-  method: "GET",
-  url: "/v2/account/change-password/status",
-  expectedStatus: 200,
-  expectedData: { percent: 100 },
-  includeJwt: true,
-});
+testAndValidateRequest(
+  "Password change progress always returns 100% for backwards compat",
+  {
+    router: account,
+    method: "GET",
+    url: "/v2/account/change-password/status",
+    expectedStatus: 200,
+    expectedData: { percent: 100 },
+    includeJwt: true,
+  },
+);
 
 testAndValidateRequest("getinfo returns valid data", {
   router: account,
   method: "GET",
   url: "/v2/account/info",
   expectedStatus: 200,
-  expectedData: { name: "Tester with password password123", installedApps: ["example-app"] },
+  expectedData: {
+    name: "Tester with password password123",
+    installedApps: ["example-app"],
+  },
   includeJwt: true,
 });
 
@@ -131,7 +137,7 @@ runTest("TOTP can be enabled", null, async () => {
   assert(setupResult.ok, "Response should return status 200");
   assert(
     typeof key === "string",
-    "Key should be present and a string"
+    "Key should be present and a string",
   );
   const totp = new TOTP(key);
   const currentToken = totp.generate();
@@ -145,7 +151,7 @@ runTest("TOTP can be enabled", null, async () => {
   assert(enableResult.ok, "Response should return status 200");
   assert(
     enableResult.body?.success,
-    "It should return success: true"
+    "It should return success: true",
   );
   app = await routerToSuperDeno(account);
   const statusRequest = app.get("/v2/account/totp/status");

@@ -31,13 +31,19 @@ export default {
     return Deno.env.get("ELECTRUM_HOST");
   },
   get ELECTRUM_PORT() {
-    return Deno.env.get("ELECTRUM_PORT") ? Number.parseInt(Deno.env.get("ELECTRUM_PORT") as string, 10) : undefined;
+    return Deno.env.get("ELECTRUM_PORT")
+      ? Number.parseInt(Deno.env.get("ELECTRUM_PORT") as string, 10)
+      : undefined;
   },
   get BITCOIN_P2P_PORT() {
-    return Deno.env.get("BITCOIN_P2P_PORT") ? Number.parseInt(Deno.env.get("BITCOIN_P2P_PORT") as string, 10) : undefined;
+    return Deno.env.get("BITCOIN_P2P_PORT")
+      ? Number.parseInt(Deno.env.get("BITCOIN_P2P_PORT") as string, 10)
+      : undefined;
   },
   get BITCOIN_RPC_PORT() {
-    return Deno.env.get("BITCOIN_RPC_PORT") ? Number.parseInt(Deno.env.get("BITCOIN_RPC_PORT") as string, 10) : undefined;
+    return Deno.env.get("BITCOIN_RPC_PORT")
+      ? Number.parseInt(Deno.env.get("BITCOIN_RPC_PORT") as string, 10)
+      : undefined;
   },
   get BITCOIN_RPC_USER() {
     return Deno.env.get("BITCOIN_RPC_USER");

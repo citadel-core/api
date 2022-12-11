@@ -21,10 +21,12 @@ router.get("/price", auth.jwt, async (ctx, next) => {
     `https://btc-price.deno.dev/?currency=${currency}`,
     {
       client: tor,
-    }
+    },
   );
   ctx.response.body = {};
-  (ctx.response.body as Record<string, number>)[currency] = parseFloat(await price.text());
+  (ctx.response.body as Record<string, number>)[currency] = parseFloat(
+    await price.text(),
+  );
   await next();
 });
 

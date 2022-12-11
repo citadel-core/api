@@ -1,6 +1,7 @@
 import { Router, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
 import * as appsLogic from "../../logic/apps.ts";
+import * as diskLogic from "../../logic/disk.ts";
 
 import * as auth from "../../middlewares/auth.ts";
 import { runCommand } from "../../services/karen.ts";
@@ -53,6 +54,12 @@ router.get("/updates", auth.jwt, async (ctx, next) => {
 router.post("/update", auth.jwt, async (ctx, next) => {
   await runCommand("trigger app-update");
   ctx.response.body = {};
+  ctx.response.status = Status.OK;
+  await next();
+});
+
+router.get("/update-status", auth.jwt, async (ctx, next) => {
+  ctx.response.body = await diskLogic.readAppUpdateStatusFile();
   ctx.response.status = Status.OK;
   await next();
 });

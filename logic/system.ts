@@ -66,7 +66,9 @@ export async function getElectrumConnectionDetails(): Promise<
     if (!electrum) {
       throw new Error("No electrum implementation found!");
     }
-    const addressUnformatted = await diskLogic.readHiddenService(`app-${electrum}-service`);
+    const addressUnformatted = await diskLogic.readHiddenService(
+      `app-${electrum}-service`,
+    );
     const address = addressUnformatted.trim();
     const port = constants.ELECTRUM_PORT!;
     const connectionString = `${address}:${port}:t`;
@@ -165,8 +167,9 @@ export async function getAvailableUpdate(): Promise<VersionFile | string> {
       );
 
       // Calculate the minimum required version
-      const minimumVersionRequired = `v${semver.minVersion(requiresVersionRange)!.raw
-        }`;
+      const minimumVersionRequired = `v${
+        semver.minVersion(requiresVersionRange)!.raw
+      }`;
 
       // If the minimum required version is what we just checked for, exit
       // This usually happens when an OTA update breaking release x.y.z is made
