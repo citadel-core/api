@@ -187,7 +187,9 @@ export async function register(
   // Save user
   try {
     const hashedPassword = await hashPassword(plainTextPassword);
+    const userfile = await diskLogic.readUserFile();
     await diskLogic.writeUserFile({
+      ...userfile,
       name: name,
       password: hashedPassword,
       seed: encryptedSeed,
@@ -216,7 +218,7 @@ export async function register(
   try {
     jwt = await generateJwt("admin");
   } catch {
-    await diskLogic.deleteUserFile();
+    await diskLogic.resetUserFile();
     throw new Error("Unable to generate JWT");
   }
 
@@ -224,8 +226,9 @@ export async function register(
   try {
     await lightningApiService.initializeWallet(seed, jwt);
   } catch (error: unknown) {
-    await diskLogic.deleteUserFile();
-    throw new Error((error as { response: { data: string } }).response.data);
+    await diskLogic.resetUserFile();
+    console.error(error);
+    throw new Error("Unable to initialize wallet");
   }
 
   await runCommand("trigger app-update");

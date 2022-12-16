@@ -1,12 +1,9 @@
 import * as diskLogic from "./disk.ts";
 import {
   assertEquals,
-  assertFalse,
   assertThrows,
 } from "https://deno.land/std@0.159.0/testing/asserts.ts";
-import { exists } from "https://deno.land/std@0.159.0/fs/exists.ts";
-import { cleanup, setEnv } from "../utils/test.ts";
-import consts from "../utils/const.ts";
+import { setEnv } from "../utils/test.ts";
 
 setEnv();
 
@@ -18,10 +15,4 @@ Deno.test("getRandomString() returns a string for an even length argument", () =
 
 Deno.test("getRandomString() fails with a not even length argument", () => {
   assertThrows(() => diskLogic.getRandomString(9));
-});
-
-Deno.test("User file can be deleted sucessfully", async () => {
-  await diskLogic.deleteUserFile();
-  assertFalse(await exists(consts.USER_FILE));
-  await cleanup();
 });

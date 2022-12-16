@@ -17,7 +17,7 @@ import * as YAML from "https://deno.land/std@0.159.0/encoding/yaml.ts";
 
 export type UserFile = {
   /** The user's name */
-  name: string;
+  name?: string;
   /** The users password, hashed by bcrypt */
   password?: string;
   /** The users mnemoic LND seed */
@@ -81,10 +81,12 @@ async function safeWriteTextFile(
   }
 }
 
-export function deleteUserFile(): Promise<void> {
-  return Deno.remove(constants.USER_FILE);
+export async function resetUserFile() {
+    const userfile = await readUserFile();
+    await writeUserFile({
+      installedApps: userfile.installedApps,
+    });
 }
-
 export async function disableTotp(): Promise<void> {
   const userFile = await readUserFile();
   userFile.secondFactors = [];
