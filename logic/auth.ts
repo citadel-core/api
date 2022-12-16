@@ -81,9 +81,9 @@ export function hashPassword(password: string): Promise<string> {
 // Returns true if the user is registered otherwise false.
 export async function isRegistered(): Promise<boolean> {
   try {
-    await diskLogic.readUserFile();
+    const userData = await diskLogic.readUserFile();
 
-    return true;
+    return !!userData.name && !!userData.password;
   } catch {
     return false;
   }
