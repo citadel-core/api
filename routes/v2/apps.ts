@@ -92,7 +92,7 @@ router.post("/sources", auth.jwt, async (ctx, next) => {
 router.get("/letsencrypt", auth.jwt, async (ctx, next) => {
   const userFile = await diskLogic.readUserFile();
   ctx.response.status = Status.OK;
-  ctx.response.body = userFile || {};
+  ctx.response.body = userFile.https || {};
   await next();
 });
 
