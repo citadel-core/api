@@ -53,7 +53,7 @@ export async function changePassword(
     // Re-encrypt seed with new password
     const decryptedSeed = await iocane
       .createAdapter()
-      .decrypt(user.seed as string, currentPassword);
+      .decrypt(user.seed, currentPassword);
     const encryptedSeed = await iocane
       .createAdapter()
       .encrypt(decryptedSeed, newPassword);

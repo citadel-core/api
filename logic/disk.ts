@@ -30,6 +30,11 @@ export type UserFile = {
   webauthnSecret?: string;
   // /** User settings */
   // settings?: UserSettings;
+  https?: {
+    email: string;
+    agreed_lets_encrypt_tos: boolean;
+    app_domains?: Record<string, string>;
+  };
 };
 
 export function getRandomString(s: number) {
@@ -82,10 +87,10 @@ async function safeWriteTextFile(
 }
 
 export async function resetUserFile() {
-    const userfile = await readUserFile();
-    await writeUserFile({
-      installedApps: userfile.installedApps,
-    });
+  const userfile = await readUserFile();
+  await writeUserFile({
+    installedApps: userfile.installedApps,
+  });
 }
 export async function disableTotp(): Promise<void> {
   const userFile = await readUserFile();
@@ -105,6 +110,23 @@ export async function enableTotp(): Promise<void> {
   if (!userFile.totpSecret) {
     throw new Error("No TOTP secret stored!");
   }
+  await writeUserFile(userFile);
+}
+
+export async function enableLetsencrypt(email: string): Promise<void> {
+  const userFile = await readUserFile();
+  userFile.https = {
+    email,
+    agreed_lets_encrypt_tos: true,
+    ...(userFile.https || {}),
+  };
+  await writeUserFile(userFile);
+}
+
+export async function addAppDomain(app: string, domain: string): Promise<void> {
+  const userFile = await readUserFile();
+  if (!userFile.https!.app_domains) userFile.https!.app_domains = {};
+  userFile.https!.app_domains![app] = domain;
   await writeUserFile(userFile);
 }
 

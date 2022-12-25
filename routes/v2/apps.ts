@@ -89,4 +89,43 @@ router.post("/sources", auth.jwt, async (ctx, next) => {
   await next();
 });
 
+router.get("/letsencrypt", auth.jwt, async (ctx, next) => {
+  const userFile = await diskLogic.readUserFile();
+  ctx.response.status = Status.OK;
+  ctx.response.body = userFile || {};
+  await next();
+});
+
+router.post("/enable-letsencrypt", auth.jwt, async (ctx, next) => {
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
+  if (
+    typeof body.email !== "string" ||
+    body.acceptedTos !== true
+  ) {
+    ctx.throw(Status.BadRequest, "Received invalid data (Missing email/Not agreed to the ToS).");
+    return;
+  }
+  await diskLogic.enableLetsencrypt(body.email);
+  ctx.response.status = Status.OK;
+  await next();
+});
+
+router.post("/add-domain", auth.jwt, async (ctx, next) => {
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
+  if (
+    typeof body.app !== "string" ||
+    typeof body.domain !== "string"
+  ) {
+    ctx.throw(Status.BadRequest, "Received invalid data.");
+    return;
+  }
+  await diskLogic.addAppDomain(body.app, body.domain);
+  ctx.response.status = Status.OK;
+  await next();
+});
+
 export default router;
