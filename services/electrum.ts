@@ -58,12 +58,18 @@ export default class ElectrumClient {
         hostname,
         port,
         transport: transport,
+      }).catch((err) => {
+        console.error(err);
+        this.#connectionPromise = null;
       });
     } else if (transport == "tls") {
       this.#connectionPromise = Deno.connectTls({
         hostname,
         port,
         ...tlsOptions,
+      }).catch((err) => {
+        console.error(err);
+        this.#connectionPromise = null;
       });
     } else {
       throw new TypeError("Unknown transport");
