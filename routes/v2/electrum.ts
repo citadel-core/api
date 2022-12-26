@@ -11,16 +11,26 @@ const router = new Router({
 });
 
 if (constants.ELECTRUM_HOST && constants.ELECTRUM_PORT) {
-  const electrumClient = new ElectrumClient(
-    constants.ELECTRUM_HOST,
-    constants.ELECTRUM_PORT,
-  );
+  let electrumClient;
+  async function initClient() {
+    try {
+      if (!electrumClient)
+        electrumClient = new ElectrumClient(
+          constants.ELECTRUM_HOST,
+          constants.ELECTRUM_PORT,
+        );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  initClient();
   router.get("/connection-details", auth.jwt, async (ctx, next) => {
     ctx.response.body = await systemLogic.getElectrumConnectionDetails();
     await next();
   });
 
   router.get("/height", auth.jwt, async (ctx, next) => {
+    initClient();
     await electrumClient.connect();
     const data = await electrumClient.sendRequest<{
       height: number;
