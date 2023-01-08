@@ -242,6 +242,7 @@ router.post("/enable-letsencrypt", auth.jwt, async (ctx, next) => {
   }
   await diskLogic.enableLetsencrypt(body.email);
   ctx.response.status = Status.OK;
+  ctx.response.body = {"success": true};
   await next();
 });
 
