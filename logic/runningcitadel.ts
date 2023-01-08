@@ -13,7 +13,7 @@ export async function getUserData() {
       "Authorization": "Basic " +
         btoa(
           `${deriveEntropy("runningcitadel-username")}:${
-            deriveEntropy("runningcitadel-username")
+            deriveEntropy("runningcitadel-password")
           }`,
         ),
     },
