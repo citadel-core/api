@@ -14,6 +14,7 @@ import {
 } from "https://deno.land/std@0.159.0/fs/mod.ts";
 import { join } from "https://deno.land/std@0.159.0/path/mod.ts";
 import * as YAML from "https://deno.land/std@0.159.0/encoding/yaml.ts";
+import { getUserData as getRunningCitadelUserData } from "./runningcitadel.ts";
 
 export type UserFile = {
   /** The user's name */
@@ -34,6 +35,12 @@ export type UserFile = {
     email: string;
     agreed_lets_encrypt_tos: boolean;
     app_domains?: Record<string, string>;
+    user?: {
+      isSetup: boolean;
+      username: string;
+      password: string;
+      subdomain: string;
+    };
   };
 };
 
@@ -118,6 +125,7 @@ export async function enableLetsencrypt(email: string): Promise<void> {
   userFile.https = {
     email,
     agreed_lets_encrypt_tos: true,
+    user: await getRunningCitadelUserData(),
     ...(userFile.https || {}),
   };
   await writeUserFile(userFile);

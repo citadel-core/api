@@ -86,4 +86,7 @@ export default {
   get I2P_PASSWORD() {
     return Deno.env.get("I2P_PASSWORD");
   },
+  get IP_ADDR() {
+    return Deno.env.get("IP_ADDR");
+  }
 };

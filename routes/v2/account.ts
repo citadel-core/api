@@ -7,9 +7,18 @@ import * as typeHelper from "../../utils/types.ts";
 import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 import * as authLogic from "../../logic/auth.ts";
 import { getPasswordFromContext } from "../../utils/auth.ts";
+import { getUserData, setRecord } from "../../logic/runningcitadel.ts";
+
+import constants from "../../utils/const.ts";
 
 const router = new Router({
   prefix: "/v2/account",
+});
+
+const tor = Deno.createHttpClient({
+  proxy: {
+    url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+  },
 });
 
 // Endpoint to change your password.
@@ -202,6 +211,68 @@ router.post("/totp/disable", auth.jwt, async (ctx, next) => {
 // Returns the current status of TOTP.
 router.get("/totp/status", async (ctx, next) => {
   ctx.response.body = { totpEnabled: await diskLogic.isTotpEnabled() };
+  await next();
+});
+
+router.get("/runningcitadel", auth.jwt, async (ctx, next) => {
+  ctx.response.body = await getUserData();
+  await next();
+});
+
+router.get("/letsencrypt", auth.jwt, async (ctx, next) => {
+  const userFile = await diskLogic.readUserFile();
+  ctx.response.status = Status.OK;
+  ctx.response.body = userFile.https || {};
+  await next();
+});
+
+router.post("/enable-letsencrypt", auth.jwt, async (ctx, next) => {
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
+  if (
+    typeof body.email !== "string" ||
+    body.acceptedTos !== true
+  ) {
+    ctx.throw(
+      Status.BadRequest,
+      "Received invalid data (Missing email/Not agreed to the ToS).",
+    );
+    return;
+  }
+  await diskLogic.enableLetsencrypt(body.email);
+  ctx.response.status = Status.OK;
+  await next();
+});
+
+router.get("/ip-addr", auth.jwt, async (ctx, next) => {
+  ctx.response.body = JSON.stringify(constants.IP_ADDR);
+  ctx.response.headers.set("Content-Type", "application/json");
+  await next();
+});
+
+router.post("/add-domain", auth.jwt, async (ctx, next) => {
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
+  if (
+    typeof body.app !== "string" ||
+    typeof body.domain !== "string"
+  ) {
+    ctx.throw(Status.BadRequest, "Received invalid data.");
+    return;
+  }
+  if (body.domain.endsWith(`.runningcitadel.com`)) {
+    if(!constants.IP_ADDR) {
+      ctx.throw(Status.InternalServerError, "IP address not set");
+      return;
+    }
+    const subdomain = body.domain.slice(0, -19);
+    const recordType = constants.IP_ADDR.includes(":") ? "AAAA" : "A";
+    setRecord(subdomain, recordType, constants.IP_ADDR);
+  }
+  await diskLogic.addAppDomain(body.app, body.domain);
+  ctx.response.status = Status.OK;
   await next();
 });
 

@@ -1,6 +1,7 @@
 import * as semver from "https://deno.land/std@0.159.0/semver/mod.ts";
 import { encode as encodeLnurl } from "https://deno.land/x/lndconnect@v1.0.1/mod.ts";
 import { encode as encodeHex } from "https://deno.land/std@0.159.0/encoding/hex.ts";
+import { hmac } from "https://deno.land/x/god_crypto@v1.4.10/hmac.ts";
 
 import type {
   backupStatus,
@@ -362,4 +363,8 @@ export function setUpdateChannel(channel: string): Promise<void> {
 
 export function startQuickUpdate(): Promise<void> {
   return runCommand(`trigger quick-update`);
+}
+
+export async function deriveEntropy(identifier: string) {
+  return hmac("sha256", await diskLogic.readSeedFile(), identifier).hex();
 }
