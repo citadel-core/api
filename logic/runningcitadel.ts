@@ -25,7 +25,7 @@ export async function getUserData() {
         btoa(
           `${deriveEntropy("runningcitadel-username")}:${
             deriveEntropy("runningcitadel-password")
-          }`);
+          }`));
                 console.log(`${deriveEntropy("runningcitadel-username")}:${
             deriveEntropy("runningcitadel-password")
           }`);
