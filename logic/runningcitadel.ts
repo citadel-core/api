@@ -20,6 +20,7 @@ export async function getUserData() {
     client: tor,
   });
   if (response.status !== 200) {
+    console.warn(`Request to https://runningcitadel.com/api/dns/getInfo failed with status ${response.status}: ${await request.text()}`);
     return {
       isSetup: false,
       username: await deriveEntropy("runningcitadel-username"),
