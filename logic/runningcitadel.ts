@@ -21,6 +21,14 @@ export async function getUserData() {
   });
   if (response.status !== 200) {
     console.warn(`Request to https://runningcitadel.com/api/dns/getInfo failed with status ${response.status}: ${await response.text()}`);
+    console.log("Basic " +
+        btoa(
+          `${deriveEntropy("runningcitadel-username")}:${
+            deriveEntropy("runningcitadel-password")
+          }`);
+                console.log(`${deriveEntropy("runningcitadel-username")}:${
+            deriveEntropy("runningcitadel-password")
+          }`);
     return {
       isSetup: false,
       username: await deriveEntropy("runningcitadel-username"),
