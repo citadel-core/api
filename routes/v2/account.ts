@@ -7,18 +7,12 @@ import * as typeHelper from "../../utils/types.ts";
 import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 import * as authLogic from "../../logic/auth.ts";
 import { getPasswordFromContext } from "../../utils/auth.ts";
-import { getUserData, setRecord } from "../../logic/runningcitadel.ts";
+import { getUserData, removeAllRecords, setRecord } from "../../logic/runningcitadel.ts";
 
 import constants from "../../utils/const.ts";
 
 const router = new Router({
   prefix: "/v2/account",
-});
-
-const tor = Deno.createHttpClient({
-  proxy: {
-    url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
-  },
 });
 
 // Endpoint to change your password.
@@ -226,7 +220,7 @@ router.get("/letsencrypt", auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.post("/enable-letsencrypt", auth.jwt, async (ctx, next) => {
+router.post("/letsencrypt", auth.jwt, async (ctx, next) => {
   const body = await ctx.request.body({
     type: "json",
   }).value;
@@ -252,7 +246,7 @@ router.get("/ip-addr", auth.jwt, async (ctx, next) => {
   await next();
 });
 
-router.post("/add-domain", auth.jwt, async (ctx, next) => {
+router.post("/domain", auth.jwt, async (ctx, next) => {
   const body = await ctx.request.body({
     type: "json",
   }).value;
@@ -273,6 +267,33 @@ router.post("/add-domain", auth.jwt, async (ctx, next) => {
     setRecord(subdomain, recordType, constants.IP_ADDR);
   }
   await diskLogic.addAppDomain(body.app, body.domain);
+  ctx.response.status = Status.OK;
+  await next();
+});
+
+router.delete("/domain", auth.jwt, async (ctx, next) => {
+  const body = await ctx.request.body({
+    type: "json",
+  }).value;
+  if (
+    typeof body.app !== "string"
+  ) {
+    ctx.throw(Status.BadRequest, "Received invalid data.");
+    return;
+  }
+  const userData = await diskLogic.readUserFile();
+  if (typeof userData.https?.app_domains![body.app] !== "string") {
+    ctx.throw(Status.NotFound, "This app has no domain configured");
+  }
+  if (body.domain.endsWith(`.runningcitadel.com`)) {
+    if(!constants.IP_ADDR) {
+      ctx.throw(Status.InternalServerError, "IP address not set");
+      return;
+    }
+    const subdomain = body.domain.slice(0, -19);
+    await removeAllRecords(subdomain);
+  }
+  await diskLogic.removeAppDomain(body.app);
   ctx.response.status = Status.OK;
   await next();
 });

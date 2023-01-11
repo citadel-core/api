@@ -138,6 +138,13 @@ export async function addAppDomain(app: string, domain: string): Promise<void> {
   await writeUserFile(userFile);
 }
 
+export async function removeAppDomain(app: string): Promise<void> {
+  const userFile = await readUserFile();
+  if (!userFile.https!.app_domains) userFile.https!.app_domains = {};
+  delete userFile.https!.app_domains![app];
+  await writeUserFile(userFile);
+}
+
 export async function isTotpEnabled(): Promise<boolean> {
   const userFile = await readUserFile();
   return userFile.secondFactors?.includes("totp") || false;

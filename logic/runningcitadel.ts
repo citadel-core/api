@@ -1,5 +1,6 @@
 import constants from "../utils/const.ts";
 import { deriveEntropy } from "./system.ts";
+import type { DnsRecord } from "https://cdn.skypack.dev/cloudflare-client?dts";
 
 const tor = Deno.createHttpClient({
   proxy: {
@@ -59,4 +60,44 @@ export async function setRecord(subdomain: string, type: string, content: string
     throw new Error(await response.text());
   }
   return await response.json();
+}
+
+export async function removeAllRecords(subdomain: string) {
+  const response = await fetch("https://runningcitadel.com/api/dns/find", {
+    headers: {
+      "Authorization": "Basic " +
+        btoa(
+          `${await deriveEntropy("runningcitadel-username")}:${
+            await deriveEntropy("runningcitadel-username")
+          }`,
+        ),
+    },
+    method: "POST",
+    body: JSON.stringify({
+      name: subdomain,
+      ttl: 120,
+    }),
+    client: tor,
+  });
+  if (response.status !== 200) {
+    throw new Error(await response.text());
+  }
+  const records: DnsRecord[] = await response.json();
+  for (const record of records) {
+    const response = await fetch(`https://runningcitadel.com/api/dns/records/${record.id}`, {
+      headers: {
+        "Authorization": "Basic " +
+          btoa(
+            `${await deriveEntropy("runningcitadel-username")}:${
+              await deriveEntropy("runningcitadel-username")
+            }`,
+          ),
+      },
+      method: "DELETE",
+      client: tor,
+    });
+    if (response.status !== 200) {
+      console.warn(await response.text());
+    }
+  }
 }
