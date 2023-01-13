@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-arm64:
     machine:
-      image: ubuntu-2204::2022.10.2
+      image: ubuntu-2204:2022.10.2
     resource_class: arm.medium
     steps:
       - checkout
@@ -31,9 +31,15 @@ jobs:
 workflows:
   docker-deployment:
     jobs:
-      - build-amd64
-      - build-arm64
+      - build-amd64:
+          contexts:
+            - Docker builds
+      - build-arm64:
+          contexts:
+            - Docker builds
       - push:
           requires:
-          - build-amd64
-          - build-arm64
+            - build-amd64
+            - build-arm64
+          contexts:
+            - Docker builds
