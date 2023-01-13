@@ -7,15 +7,12 @@ jobs:
     resource_class: arm.medium
     steps:
       - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
       - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
       - run: |
           docker build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_BRANCH}-arm64 .
   build-amd64:
-    machine:
-      image: ubuntu-2204::2022.10.2
-    resource_class: x86.medium
+    docker:
+      - image: docker:stable
     steps:
       - checkout
       - setup_remote_docker:
