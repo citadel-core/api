@@ -32,14 +32,14 @@ workflows:
   docker-deployment:
     jobs:
       - build-amd64:
-          contexts:
+          context:
             - Docker builds
       - build-arm64:
-          contexts:
+          context:
             - Docker builds
       - push:
           requires:
             - build-amd64
             - build-arm64
-          contexts:
+          context:
             - Docker builds
