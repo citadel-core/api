@@ -1,0 +1,42 @@
+version: 2.1
+
+jobs:
+  build-arm64:
+    machine:
+      image: ubuntu-2204::2022.10.2
+    resource_class: arm.medium
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
+      - run: |
+          docker build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_BRANCH}-arm64 .
+  build-amd64:
+    machine:
+      image: ubuntu-2204::2022.10.2
+    resource_class: x86.medium
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
+      - run: |
+          docker build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_BRANCH}-amd64 .
+  push:
+    docker:
+      - image: docker:stable
+    steps:
+      - checkout
+      - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
+      - run: ./create-manifest.sh ${DOCKERHUB_CONTAINER_NAMESPACE}/api "${CIRCLE_BRANCH}"
+
+workflows:
+  docker-deployment:
+    jobs:
+      - build-amd64
+      - build-arm64
+      - push:
+          requires:
+          - build-amd64
+          - build-arm64
