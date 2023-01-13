@@ -23,9 +23,12 @@ jobs:
           docker buildx build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_BRANCH}-amd64 .
   push:
     docker:
-      - image: docker:stable
+      - image: cimg/base:2023.01
     steps:
       - checkout
+      - setup_remote_docker:
+          version: 20.10.18
+          docker_layer_caching: true
       - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
       - run: ./create-manifest.sh ${DOCKERHUB_CONTAINER_NAMESPACE}/api "${CIRCLE_BRANCH}"
 
