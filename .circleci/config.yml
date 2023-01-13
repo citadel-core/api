@@ -9,10 +9,11 @@ jobs:
       - checkout
       - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
       - run: |
-          docker buildx build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_BRANCH}-arm64 .
+          docker buildx build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_TAG:-$CIRCLE_BRANCH}-arm64 .
   build-amd64:
     docker:
       - image: cimg/base:2023.01
+    resource_class: docker.small
     steps:
       - checkout
       - setup_remote_docker:
@@ -20,17 +21,18 @@ jobs:
           docker_layer_caching: true
       - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
       - run: |
-          docker buildx build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_BRANCH}-amd64 .
+          docker buildx build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_TAG:-$CIRCLE_BRANCH}-amd64 .
   push:
     docker:
       - image: cimg/base:2023.01
+    resource_class: docker.small
     steps:
       - checkout
       - setup_remote_docker:
           version: 20.10.18
           docker_layer_caching: true
       - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
-      - run: ./create-manifest.sh ${DOCKERHUB_CONTAINER_NAMESPACE}/api "${CIRCLE_BRANCH}"
+      - run: ./create-manifest.sh ${DOCKERHUB_CONTAINER_NAMESPACE}/api "${CIRCLE_TAG:-$CIRCLE_BRANCH}"
 
 workflows:
   docker-deployment:
