@@ -4,7 +4,7 @@ jobs:
   build-arm64:
     machine:
       image: ubuntu-2204:2022.10.2
-    resource_class: arm.medium
+    resource_class: arm.medium # Small is not available for arm64
     steps:
       - checkout
       - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
@@ -13,7 +13,7 @@ jobs:
   build-amd64:
     docker:
       - image: cimg/base:2023.01
-    resource_class: docker.small
+    resource_class: small
     steps:
       - checkout
       - setup_remote_docker:
