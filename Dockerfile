@@ -3,8 +3,8 @@ WORKDIR /app
 
 COPY . .
 
-RUN deno vendor app.ts
+RUN deno vendor app.ts https://deno.land/std@0.172.0/node/module_all.ts
 
 EXPOSE 3000
 
-CMD ["deno", "run", "--unstable", "--no-remote", "--import-map=vendor/import_map.json", "--allow-all", "app.ts"]
+CMD ["deno", "run", "--unstable", "--import-map=vendor/import_map.json", "--allow-all", "app.ts"]
