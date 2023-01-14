@@ -3,6 +3,7 @@ import { Router, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 import * as diskLogic from "../../logic/disk.ts";
 import * as auth from "../../middlewares/auth.ts";
 import * as typeHelper from "../../utils/types.ts";
+import { runCommand } from "../../services/karen.ts";
 
 import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 import * as authLogic from "../../logic/auth.ts";
@@ -267,6 +268,7 @@ router.post("/domain", auth.jwt, async (ctx, next) => {
     setRecord(subdomain, recordType, constants.IP_ADDR);
   }
   await diskLogic.addAppDomain(body.app, body.domain);
+  await runCommand("trigger caddy-config-update");
   ctx.response.status = Status.OK;
   await next();
 });
@@ -294,6 +296,7 @@ router.delete("/domain", auth.jwt, async (ctx, next) => {
     await removeAllRecords(subdomain);
   }
   await diskLogic.removeAppDomain(body.app);
+  await runCommand("trigger caddy-config-update");
   ctx.response.status = Status.OK;
   await next();
 });
