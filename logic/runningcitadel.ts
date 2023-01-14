@@ -43,7 +43,7 @@ export async function setRecord(subdomain: string, type: string, content: string
       "Authorization": "Basic " +
         btoa(
           `${await deriveEntropy("runningcitadel-username")}:${
-            await deriveEntropy("runningcitadel-username")
+            await deriveEntropy("runningcitadel-password")
           }`,
         ),
     },
@@ -68,7 +68,7 @@ export async function removeAllRecords(subdomain: string) {
       "Authorization": "Basic " +
         btoa(
           `${await deriveEntropy("runningcitadel-username")}:${
-            await deriveEntropy("runningcitadel-username")
+            await deriveEntropy("runningcitadel-password")
           }`,
         ),
     },
@@ -89,7 +89,7 @@ export async function removeAllRecords(subdomain: string) {
         "Authorization": "Basic " +
           btoa(
             `${await deriveEntropy("runningcitadel-username")}:${
-              await deriveEntropy("runningcitadel-username")
+              await deriveEntropy("runningcitadel-password")
             }`,
           ),
       },
