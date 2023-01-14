@@ -1,10 +1,10 @@
-FROM ghcr.io/runcitadel/deno:main
+FROM runcitadel/deno:main
 WORKDIR /app
 
 COPY . .
 
-RUN deno cache --unstable app.ts
+RUN deno vendor app.ts
 
 EXPOSE 3000
 
-CMD ["deno", "run", "--unstable", "--allow-all", "app.ts"]
+CMD ["deno", "run", "--unstable", "--no-remote", "--import-map=vendor/import_map.json", "--allow-all", "app.ts"]

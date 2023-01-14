@@ -18,7 +18,8 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.18
-          docker_layer_caching: true
+          # Caching is expensive on CircleCI, and for a build this size, it's cheaper to avoid caching
+          docker_layer_caching: false
       - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
       - run: |
           docker buildx build --push --tag ${DOCKERHUB_CONTAINER_NAMESPACE}/api:${CIRCLE_TAG:-$CIRCLE_BRANCH}-amd64 .
@@ -30,7 +31,8 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 20.10.18
-          docker_layer_caching: true
+          # Caching is expensive on CircleCI, and for a build this size, it's cheaper to avoid caching
+          docker_layer_caching: false
       - run: docker login -u "$DOCKERHUB_USER_NAME" -p "$DOCKERHUB_ACCESS_TOKEN"
       - run: ./create-manifest.sh ${DOCKERHUB_CONTAINER_NAMESPACE}/api "${CIRCLE_TAG:-$CIRCLE_BRANCH}"
 
