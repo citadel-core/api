@@ -1,4 +1,4 @@
-FROM runcitadel/deno:main
+FROM runcitadel/deno:v1.29.3
 WORKDIR /app
 
 COPY . .
