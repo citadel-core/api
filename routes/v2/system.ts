@@ -22,6 +22,14 @@ router.get("/dashboard-hidden-service", auth.jwt, async (ctx, next) => {
   await next();
 });
 
+// No authentication; we need to redirect before login
+router.get("/dashboard-domain", async (ctx, next) => {
+  const url = await diskLogic.readUserFile()?.https?.app_domains?.dashboard;
+
+  ctx.response.body = { url };
+  await next();
+});
+
 router.get("/lndconnect-urls", auth.jwt, async (ctx, next) => {
   ctx.response.body = await systemLogic.getLndConnectUrls();
   await next();
