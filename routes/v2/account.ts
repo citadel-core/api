@@ -270,6 +270,7 @@ router.post("/domain", auth.jwt, async (ctx, next) => {
   await diskLogic.addAppDomain(body.app, body.domain);
   await runCommand("trigger caddy-config-update");
   ctx.response.status = Status.OK;
+  ctx.response.body = {"success": true};
   await next();
 });
 
@@ -298,6 +299,7 @@ router.delete("/domain", auth.jwt, async (ctx, next) => {
   await diskLogic.removeAppDomain(body.app);
   await runCommand("trigger caddy-config-update");
   ctx.response.status = Status.OK;
+  ctx.response.body = {"success": true};
   await next();
 });
 
