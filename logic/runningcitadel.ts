@@ -2,12 +2,6 @@ import constants from "../utils/const.ts";
 import { deriveEntropy } from "./system.ts";
 import type { DnsRecord } from "https://cdn.skypack.dev/cloudflare-client?dts";
 
-const tor = Deno.createHttpClient({
-  proxy: {
-    url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
-  },
-});
-
 export async function getUserData() {
   const response = await fetch("https://runningcitadel.com/api/dns/getInfo", {
     headers: {
@@ -18,7 +12,11 @@ export async function getUserData() {
           }`,
         ),
     },
-    client: tor,
+    client: Deno.createHttpClient({
+      proxy: {
+        url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+      },
+    }),
   });
   if (response.status !== 200) {
     return {
@@ -54,7 +52,11 @@ export async function setRecord(subdomain: string, type: string, content: string
       content,
       ttl: 120,
     }),
-    client: tor,
+    client: Deno.createHttpClient({
+      proxy: {
+        url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+      },
+    }),
   });
   if (response.status !== 200) {
     throw new Error(await response.text());
@@ -77,7 +79,11 @@ export async function removeAllRecords(subdomain: string) {
       name: subdomain,
       ttl: 120,
     }),
-    client: tor,
+    client: Deno.createHttpClient({
+      proxy: {
+        url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+      },
+    }),
   });
   if (response.status !== 200) {
     throw new Error(await response.text());
@@ -94,7 +100,11 @@ export async function removeAllRecords(subdomain: string) {
           ),
       },
       method: "DELETE",
-      client: tor,
+      client: Deno.createHttpClient({
+        proxy: {
+          url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+        },
+      }),
     });
     if (response.status !== 200) {
       console.warn(await response.text());

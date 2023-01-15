@@ -7,12 +7,6 @@ const router = new Router({
   prefix: "/v2/external",
 });
 
-const tor = Deno.createHttpClient({
-  proxy: {
-    url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
-  },
-});
-
 router.get("/price", auth.jwt, async (ctx, next) => {
   const currency = ctx.request.url.searchParams.get("currency") || "USD";
   // btc-price.deno.dev is maintained by the Citadel team and manages automatic source choosing,
@@ -20,7 +14,11 @@ router.get("/price", auth.jwt, async (ctx, next) => {
   const price = await fetch(
     `https://btc-price.deno.dev/?currency=${currency}`,
     {
-      client: tor,
+      client: Deno.createHttpClient({
+        proxy: {
+          url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+        },
+      }),
     },
   );
   ctx.response.body = {};

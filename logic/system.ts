@@ -14,12 +14,6 @@ import { runCommand } from "../services/karen.ts";
 import * as appsLogic from "./apps.ts";
 import * as diskLogic from "./disk.ts";
 
-const tor = Deno.createHttpClient({
-  proxy: {
-    url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
-  },
-});
-
 export type ConnectionDetails = {
   address: string;
   port: number;
@@ -128,6 +122,11 @@ export async function getBitcoinRpcConnectionDetails(): Promise<
 }
 
 export async function getAvailableUpdate(): Promise<VersionFile | string> {
+  const tor = Deno.createHttpClient({
+    proxy: {
+      url: `socks5h://${constants.TOR_PROXY_IP}:${constants.TOR_PROXY_PORT}`,
+    },
+  });
   try {
     const current = await diskLogic.readVersionFile();
     const currentVersion = current.version;
