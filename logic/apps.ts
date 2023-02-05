@@ -1,7 +1,7 @@
 import { runCommand } from "../services/karen.ts";
 import * as diskLogic from "./disk.ts";
 import constants from "../utils/const.ts";
-import { join } from "https://deno.land/std@0.152.0/path/mod.ts";
+import { join } from "https://deno.land/std@0.176.0/path/mod.ts";
 
 export type MetadataV4 = {
   /**

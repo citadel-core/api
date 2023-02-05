@@ -6,7 +6,7 @@ import {
   testAndValidateRequest,
   cleanup
 } from "../../utils/test.ts";
-import { assert, assertEquals, assertFalse } from "https://deno.land/std@0.159.0/testing/asserts.ts";
+import { assert, assertEquals, assertFalse } from "https://deno.land/std@0.176.0/testing/asserts.ts";
 import { generateJwt } from "../../utils/jwt.ts";
 import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 

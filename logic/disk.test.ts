@@ -2,7 +2,7 @@ import * as diskLogic from "./disk.ts";
 import {
   assertEquals,
   assertThrows,
-} from "https://deno.land/std@0.159.0/testing/asserts.ts";
+} from "https://deno.land/std@0.176.0/testing/asserts.ts";
 import { setEnv } from "../utils/test.ts";
 
 setEnv();

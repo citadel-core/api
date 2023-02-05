@@ -11,9 +11,9 @@ import {
   ensureFile,
   exists,
   existsSync,
-} from "https://deno.land/std@0.159.0/fs/mod.ts";
-import { join } from "https://deno.land/std@0.159.0/path/mod.ts";
-import * as YAML from "https://deno.land/std@0.159.0/encoding/yaml.ts";
+} from "https://deno.land/std@0.176.0/fs/mod.ts";
+import { join } from "https://deno.land/std@0.176.0/path/mod.ts";
+import * as YAML from "https://deno.land/std@0.176.0/encoding/yaml.ts";
 import { getUserData as getRunningCitadelUserData } from "./runningcitadel.ts";
 
 export type UserFile = {
