@@ -201,7 +201,7 @@ export function runTest<PreTestResult = unknown, TestResult = unknown>(
   name: string,
   preTest: (() => PreTestResult) | null | undefined,
   test: (fromPreTest: Awaited<PreTestResult>) => TestResult,
-  postTest: (args: {
+  postTest?: (args: {
     result: Awaited<TestResult>;
     karenMessages: string[];
   }) => unknown,
@@ -221,7 +221,8 @@ export function runTest<PreTestResult = unknown, TestResult = unknown>(
     }
     const karenMessages = await karenMessagesPromise;
     await cleanup();
-    await postTest({ result: testResult, karenMessages });
+    if (postTest)
+      await postTest({ result: testResult, karenMessages });
   });
 }
 

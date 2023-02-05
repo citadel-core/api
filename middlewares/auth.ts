@@ -3,7 +3,7 @@ import * as diskLogic from "../logic/disk.ts";
 import { isString } from "../utils/types.ts";
 import { TOTP } from "https://deno.land/x/god_crypto@v1.4.10/otp.ts";
 
-import Rsa from "https://esm.sh/node-rsa";
+import Rsa from "https://esm.sh/node-rsa@1.1.1";
 import { Middleware, Status } from "https://deno.land/x/oak@v11.1.0/mod.ts";
 
 import * as bcrypt from "https://deno.land/x/bcrypt@v0.4.0/mod.ts";

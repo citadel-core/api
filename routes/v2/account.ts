@@ -186,9 +186,13 @@ router.post("/totp/disable", auth.jwt, async (ctx, next) => {
     // TOTP should be already set up
     const key = info.totpSecret;
 
+    if (typeof body.authenticatorToken === "number") {
+      body.authenticatorToken = body.authenticatorToken.toString();
+    }
+
     typeHelper.isString(body.authenticatorToken, ctx);
     const totp = new TOTP(key as string);
-    const isValid = totp.verify(body.authenticatorToken as string);
+    const isValid = totp.verify(body.authenticatorToken.toString());
 
     if (isValid) {
       await diskLogic.disableTotp();
@@ -196,8 +200,10 @@ router.post("/totp/disable", auth.jwt, async (ctx, next) => {
     } else {
       ctx.throw(Status.Unauthorized, "TOTP token invalid");
     }
-  } else {
-    ctx.throw(Status.InternalServerError, "TOTP disable failed");
+  } else if (!await diskLogic.isTotpEnabled()) {
+    ctx.throw(Status.BadRequest, "TOTP is already disabled");
+  } else if (!body.authenticatorToken) {
+    ctx.throw(Status.Unauthorized, "Missing authenticator token");
   }
 
   await next();
