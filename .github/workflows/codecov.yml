@@ -18,6 +18,6 @@ jobs:
       - name: Create coverage report
         run: deno coverage ./coverage --lcov > coverage.lcov # create coverage report
       - name: Collect coverage
-        uses: codecov/codecov-action@v1.0.10 # upload the report on Codecov
+        uses: codecov/codecov-action@v3.1.1
         with:
           file: ./coverage.lcov
