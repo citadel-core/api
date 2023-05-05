@@ -294,7 +294,7 @@ router.delete("/domain", auth.jwt, async (ctx, next) => {
   if (typeof userData.https?.app_domains![body.app] !== "string") {
     ctx.throw(Status.NotFound, "This app has no domain configured");
   }
-  if (body.domain.endsWith(`.runningcitadel.com`)) {
+  if (body.domain?.endsWith(`.runningcitadel.com`)) {
     if(!constants.IP_ADDR) {
       ctx.throw(Status.InternalServerError, "IP address not set");
       return;
